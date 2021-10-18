@@ -1,0 +1,58 @@
+#!/bin/bash
+
+opt_err=0
+opt_s=0
+cs=3
+
+while [ -n "$1" ]
+do
+  case "$1" in
+    -s) opt_s=1;;
+    -c) cs="$2"; re='^[0-9]+$'
+        if ! [[ $cs =~ $re ]]; then echo "ERR: Неверно указано количество хранимых снимков"; opt_err=1; fi
+        shift;;
+    -*) echo "ERR: Неизвестная опция $1"; opt_err=1;;
+    *) params+=( $1 );;
+  esac
+  shift
+done
+
+if [[ ${#params[*]} -ne 1 ]]; then echo "ERR: Неверно указаны параметры"; fi
+
+if [[ $opt_err -eq 1 ]] || [[ ${#params[*]} -ne 1 ]]
+then
+  echo
+  echo "Создание снимка для набора данных ZFS и удаление старых снимков, кроме последних"
+  echo
+  echo "Команда:"
+  echo "zsnap [-s] [-c <countsnaps>] <dataset>"
+  echo "-s Не создавать новый снимок"
+  echo "-c Количество хранимых снимков"
+  echo
+  echo "Пример:"
+  echo "zsnap pool1/data"
+  echo
+  exit 1
+fi
+
+dataset=${params[0]}
+
+date_format() {
+  echo $(date "+%Y%m%d%H%M%S")
+}
+
+if [[ $opt_s -eq 0 ]]
+then
+  zsnap="zsnap-$(date_format)"
+  echo "Создаем новый снимок $dataset@zsnap-$(date_format)"
+  zfs snapshot $dataset@zsnap-$(date_format) -r
+fi
+
+echo "Удаляем старые снимки zsnap для $dataset, кроме последних"
+snaps=`zfs list -H -t snapshot -o name $dataset | grep "@zsnap-20" | head -n -$cs`
+for snap in $snaps
+do
+  zfs destroy $snap -r
+done
+
+echo "Завершено"
