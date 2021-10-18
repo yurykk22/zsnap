@@ -1,0 +1,4 @@
+# m h dom mon dow user	command
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+5 0 * * * root /usr/local/bin/zsnap pool1/data
