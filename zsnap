@@ -38,7 +38,7 @@ fi
 dataset=${params[0]}
 
 date_format() {
-  echo $(date "+%Y%m%d%H%M%S")
+  echo $(date "+%Y-%m-%d-%H%M%S")
 }
 
 if [[ $opt_s -eq 0 ]]
