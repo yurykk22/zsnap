@@ -22,7 +22,7 @@ if [[ ${#params[*]} -ne 1 ]]; then echo "ERR: Неверно указаны па
 if [[ $opt_err -eq 1 ]] || [[ ${#params[*]} -ne 1 ]]
 then
   echo
-  echo "Периодическое обновление снимков для наборов данных ZFS"
+  echo "Создание снимка для набора данных ZFS с удалением устаревших снимков"
   echo
   echo "Команда:"
   echo "zsnap [-s] [-c <countsnaps>] <dataset>"
